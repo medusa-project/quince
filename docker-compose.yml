@@ -1,0 +1,20 @@
+##
+# docker-compose file for running tests. All dependent services are included
+# except for the Medusa Downloader. TODO: add a Downloader service
+#
+# Example invocation: docker-compose up --build --exit-code-from quince
+#
+version: '3'
+services:
+  quince:
+    build:
+      context: .
+      dockerfile: docker/quince/Dockerfile
+    command: bash -c "sleep 20 && bin/rails db:prepare && bin/rails test && bin/rails zeitwerk:check"
+  postgres:
+    hostname: postgres
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_DB: quince
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
