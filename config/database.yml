@@ -1,0 +1,52 @@
+##
+# N.B. 1: Connection settings should not be edited in this file; use
+# `bin/rails credentials:edit` instead.
+
+<%
+path        = File.join(Rails.root, 'config', 'credentials', 'development.yml')
+dev_config  = File.exist?(path) ? YAML.load(File.read(path)) : {}
+path        = File.join(Rails.root, 'config', 'credentials', 'test.yml')
+test_config = File.exist?(path) ? YAML.load(File.read(path)) : {}
+%>
+
+default: &default
+  adapter:      postgresql
+  encoding:     unicode
+  pool:         <%= ENV.fetch("RAILS_MAX_THREADS") { 5 }.to_i %>
+  timeout:      5000
+  min_messages: warning
+  template:     template0
+
+development: &development
+  <<: *default
+  host:     <%= dev_config['db_host'] %>
+  port:     <%= dev_config['db_port'] %>
+  database: <%= dev_config['db_database'] %>
+  username: <%= dev_config['db_username'] %>
+  password: <%= dev_config['db_password'] %>
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+
+test: &test
+  <<: *default
+  host:     <%= test_config['db_host'] %>
+  port:     <%= test_config['db_port'] %>
+  database: <%= test_config['db_database'] %>
+  username: <%= test_config['db_username'] %>
+  password: <%= test_config['db_password'] %>
+
+demo_and_production: &demo_and_production
+  <<: *default
+  host:     <%= Rails.application.credentials.dig(:db_host) %>
+  port:     <%= Rails.application.credentials.dig(:db_port) %>
+  database: <%= Rails.application.credentials.dig(:db_database) %>
+  username: <%= Rails.application.credentials.dig(:db_username) %>
+  password: <%= Rails.application.credentials.dig(:db_password) %>
+
+demo: &demo
+  <<: *demo_and_production
+
+production: &production
+  <<: *demo_and_production
