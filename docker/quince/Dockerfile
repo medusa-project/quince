@@ -27,7 +27,6 @@ WORKDIR app
 # This is a separate, earlier step in order to cache dependencies.
 COPY Gemfile Gemfile.lock ./
 RUN gem install bundler \
-    && bundle config set without 'development test' \
     && bundle install
 
 # Copy the main application, except whatever is listed in .dockerignore.
